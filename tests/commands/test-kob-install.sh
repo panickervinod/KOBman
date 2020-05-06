@@ -57,4 +57,5 @@ function kob_cleanup {
 
 kob_init "$1" "$2"
 kob_execute
+kob_verify
 kob_cleanup
