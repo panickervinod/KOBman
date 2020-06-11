@@ -19,10 +19,7 @@ git checkout $branch
 mkdir -p build/tmp
 
 # making of zip files
-<<<<<<< HEAD
 
-=======
->>>>>>> efe700656d7b5032bee90a9d40e4e906799788ec
 zip -rj ~/KOBman/build/tmp/kobman-latest.zip ~/KOBman/dist/list.txt ~/KOBman/src/main/bash/kobman-* ~/KOBman/src/main/bash/envs/kobman-* ~/KOBman/src/main/bash/commands/kobman-*
 
 #zip -r build/tmp/kobman-latest.zip ~/KOBman/src/
