@@ -12,15 +12,22 @@ if [[ -z "$kob_version" ]];
 fi
 
 #setting up environment variables
-if [[ -z $KOB_ARCHIVE_DOWNLOAD_REPO ]];
-    then
-        KOB_ARCHIVE_DOWNLOAD_REPO={KOB_ARCHIVE_DOWNLOAD_REPO:-KOBman}
-fi
+# if [[ -z $KOB_ARCHIVE_DOWNLOAD_REPO ]];
+#     then
+#         KOB_ARCHIVE_DOWNLOAD_REPO={KOB_ARCHIVE_DOWNLOAD_REPO:-KOBman}
+# fi
 
 if [[ -z $KOBMAN_NAMESPACE ]];
     then
+<<<<<<< HEAD
         KOBMAN_NAMESPACE={KOBMAN_NAMESPACE:-hyperledgerkochi}
 fi
+=======
+        
+        KOB_NAMESPACE={KOBMAN_NAMESPACE:-hyperledgerkochi}
+
+fi      
+>>>>>>> efe700656d7b5032bee90a9d40e4e906799788ec
 
 # prepare branch
 cd ~/KOBman
@@ -35,8 +42,13 @@ cp ~/KOBman/scripts/tmpl/*.tmpl ~/KOBman/scripts/
 for file in ~/KOBman/scripts/*.tmpl;
 do
     sed -i "s/@KOB_VERSION@/$kob_version/g" $file
+<<<<<<< HEAD
     sed -i "s/@KOB_ARCHIVE_DOWNLOAD_REPO@/$KOB_ARCHIVE_DOWNLOAD_REPO/g" $file
     sed -i "s/@KOB_NAMESPACE@/$KOBMAN_NAMESPACE/g" $file
+=======
+    sed -i "s/@KOB_ARCHIVE_DOWNLOAD_REPO@/KOBman/g" $file
+    sed -i "s/@KOB_NAMESPACE@/$KOB_NAMESPACE/g" $file
+>>>>>>> efe700656d7b5032bee90a9d40e4e906799788ec
     # renaming to remove .tmpl extension
     mv "$file" "${file//.tmpl/}"
 done
@@ -52,5 +64,5 @@ git push -f -u origin $branch
 git tag -a $kob_version -m "Releasing version $kob_version"
 git push origin $kob_version
 
-#checkout to dev
+#checkout to master
 git checkout master
