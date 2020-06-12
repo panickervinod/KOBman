@@ -1,13 +1,17 @@
+
 #!/bin/bash
 
-sudo dpkg --configure -a
 #Install: stable
 
 # Global variables
-export KOBMAN_VERSION="0.01"
 KOBMAN_PLATFORM=$(uname)
 export KOBMAN_SERVICE="https://raw.githubusercontent.com"
-export KOBMAN_NAMESPACE="EtricKombat"
+
+KOBMAN_NAMESPACE=""
+KOBMAN_VERSION="tag6"
+
+# KOBMAN_DIST_BRANCH=${KOBMAN_DIST_BRANCH:-REL-${KOBMAN_VERSION}}
+
 
 
 if [ -z "$KOBMAN_DIR" ]; then
@@ -20,19 +24,17 @@ kobman_src_folder="${KOBMAN_DIR}/src"
 kobman_tmp_folder="${KOBMAN_DIR}/tmp"
 kobman_stage_folder="${kobman_tmp_folder}/stage"
 kobman_zip_file="${kobman_tmp_folder}/kobman-${KOBMAN_VERSION}.zip"
-kobman_zip_tests="${kobman_tmp_folder}/kobman-test.zip"
-kobman_tests_folder="${KOBMAN_DIR}/tests"
 kobman_env_folder="${KOBMAN_DIR}/envs"
 kobman_stage_folder="${kobman_tmp_folder}/stage"
 kobman_etc_folder="${KOBMAN_DIR}/etc"
 kobman_var_folder="${KOBMAN_DIR}/var"
-kobman_archives_folder="${KOBMAN_DIR}/archives"
-kobman_candidates_folder="${KOBMAN_DIR}/candidates"
 kobman_config_file="${kobman_etc_folder}/config"
 kobman_bash_profile="${HOME}/.bash_profile"
 kobman_profile="${HOME}/.profile"
 kobman_bashrc="${HOME}/.bashrc"
 kobman_zshrc="${HOME}/.zshrc"
+
+
 
 kobman_init_snippet=$( cat << EOF
 #THIS MUST BE AT THE END OF THE FILE FOR KOBMAN TO WORK!!!
@@ -60,11 +62,10 @@ case "$(uname)" in
         freebsd=true
 esac
 
-sudo apt install figlet -y
 
 
-figlet KOB Utility -f small
-figlet Setting up -f small
+echo "KOBman "
+echo "Setting up "
 
 
 # Sanity checks
@@ -169,11 +170,12 @@ mkdir -p "$kobman_stage_folder"
 mkdir -p "$kobman_env_folder"
 mkdir -p "$kobman_etc_folder"
 mkdir -p "$kobman_var_folder"
-mkdir -p "$kobman_archives_folder"
-mkdir -p "$kobman_candidates_folder"
+
 
 
 echo "Prime the config file..."
+echo "config selfupdate/debug_mode = true"
+
 touch "$kobman_config_file"
 echo "kobman_auto_answer=false" >> "$kobman_config_file"
 echo "kobman_auto_selfupdate=false" >> "$kobman_config_file"
@@ -181,13 +183,14 @@ echo "kobman_insecure_ssl=false" >> "$kobman_config_file"
 echo "kobman_curl_connect_timeout=7" >> "$kobman_config_file"
 echo "kobman_curl_max_time=10" >> "$kobman_config_file"
 echo "kobman_beta_channel=false" >> "$kobman_config_file"
-echo "kobman_debug_mode=false" >> "$kobman_config_file"
+echo "kobman_debug_mode=true" >> "$kobman_config_file"
 echo "kobman_colour_enable=true" >> "$kobman_config_file"
 
 echo "Download script archive..."
 
 # once move to kobman namespace needs to update kobman-latest.zip 
-curl --location --progress-bar "${KOBMAN_SERVICE}/${KOBMAN_NAMESPACE}/KOBman/master/dist/kobman-latest.zip" > "$kobman_zip_file"
+curl -sL --location --progress-bar "${KOBMAN_SERVICE}/${KOBMAN_NAMESPACE}/KOBman/dist/dist/kobman-latest.zip" > "$kobman_zip_file"
+
 
 ARCHIVE_OK=$(unzip -qt "$kobman_zip_file" | grep 'No errors detected in compressed data')
 if [[ -z "$ARCHIVE_OK" ]]; then
@@ -211,11 +214,18 @@ unzip -qo "$kobman_zip_file" -d "$kobman_stage_folder"
 
 echo "Install scripts..."
 
+
+curl -sL "https://raw.githubusercontent.com/${KOBMAN_NAMESPACE}/KOBman/master/dist/environments" > tmp.txt
+sed -i 's/,/ /g' tmp.txt 
+environments=$(<tmp.txt)
+for i in $environments;
+do
+	mv "$kobman_stage_folder"/kobman-$i.sh "$kobman_env_folder"
+done 
+rm tmp.txt
 mv "${kobman_stage_folder}/kobman-init.sh" "$kobman_bin_folder"
-sudo chmod +x "${kobman_stage_folder}/kobman-test.sh"
-mv "${kobman_stage_folder}/kobman-test.sh" "$kobman_bin_folder"
-mv "$kobman_stage_folder"/kobman-[kt]* "$kobman_env_folder"
 mv "$kobman_stage_folder"/kobman-* "$kobman_src_folder"
+mv "$kobman_stage_folder"/list.txt "$kobman_var_folder"
 
 echo "Set version to $KOBMAN_VERSION ..."
 echo "$KOBMAN_VERSION" > "${KOBMAN_DIR}/var/version.txt"
@@ -244,10 +254,6 @@ if [[ -z $(grep 'kobman-init.sh' "$kobman_zshrc") ]]; then
     echo "Updated existing ${kobman_zshrc}"
 fi
 
-sudo chmod a+rwx .
-sudo chmod u+xr ${KOBMAN_DIR}/candidates 
-sudo chmod go+x /
-sudo chmod go+x /root
 echo -e "\n\n\nAll done!\n\n"
 
 echo "Please open a new terminal, or run the following in the existing one:"
