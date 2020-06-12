@@ -7,8 +7,8 @@
 KOBMAN_PLATFORM=$(uname)
 export KOBMAN_SERVICE="https://raw.githubusercontent.com"
 
-KOBMAN_NAMESPACE=""
-KOBMAN_VERSION="tag6"
+KOBMAN_NAMESPACE="hyperledgerkochi"
+KOBMAN_VERSION="tag34"
 
 # KOBMAN_DIST_BRANCH=${KOBMAN_DIST_BRANCH:-REL-${KOBMAN_VERSION}}
 
