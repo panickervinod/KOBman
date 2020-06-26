@@ -4,15 +4,13 @@
 function __kob_version {
 
 
-echo "     __ ______  ____              _    __               _          " 
-echo "    / //_/ __ \/ __ )            | |  / /__  __________(_)___  ____  " 
-echo "   / ,< / / / / __  |  ______    | | / / _ \/ ___/ ___/ / __ \/ __ \ " 
-echo "  / /| / /_/ / /_/ /  /_____/    | |/ /  __/ /  (__  ) / /_/ / / / / " 
-echo " /_/ |_\____/_____/              |___/\___/_/  /____/_/\____/_/ /_/  " 
-                                                                   
+  local environment_parameter=$1
+  local environment_value=$2
 
-
-
-	echo ""
-	__kobman_echo_yellow "KOBMAN ${KOBMAN_VERSION}"
+  if [ -z "$environment_parameter" ]
+	then
+		echo "KOBman version" "$(cat ${KOBMAN_DIR}/var/version.txt)"
+	else
+		__kobman_version_"$environment_value"
+	fi
 }
